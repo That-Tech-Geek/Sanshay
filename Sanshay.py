@@ -36,7 +36,7 @@ def plot_correlations(df, cols):
             st.write(corr_coefficients)
             
             # Identify highly correlated columns
-            highly_correlated_cols = [(i, j) for i in range(len(corr)) for j in range(i) if abs(corr.iloc[i, j]) > 0.8 and i!= j and cols[i]!= cols[j]]
+            highly_correlated_cols = [(cols[i], cols[j]) for i in range(len(corr)) for j in range(i) if abs(corr.iloc[i, j]) > 0.8 and i!= j]
             st.write("Financial metrics that are strongly linked:")
             st.write(highly_correlated_cols)
             
