@@ -36,16 +36,17 @@ def plot_correlations(df, cols):
         st.write(corr_coefficients)
         
         # Identify highly correlated columns
-        highly_correlated_cols = [(i, j) for i in range(len(corr)) for j in range(i) if abs(corr.iloc[i, j]) > 0.8]
+        highly_correlated_cols = [(i, j) for i in range(len(corr)) for j in range(i) if abs(corr.iloc[i, j]) > 0.8 and i!= j]
         st.write("Financial metrics that are strongly linked:")
         st.write(highly_correlated_cols)
         
         # Investment Recommendation
         investment_recommendation = []
         for col in cols:
-            if corr[col].mean() > 0.5:
+            corr_mean = corr[col].mean()
+            if corr_mean > 0.5:
                 investment_recommendation.append((col, "Good investment opportunity", 0.7))  # 70% weighting for positive correlation
-            elif corr[col].mean() < -0.5:
+            elif corr_mean < -0.5:
                 investment_recommendation.append((col, "Not a good investment opportunity", 0.3))  # 30% weighting for negative correlation
             else:
                 investment_recommendation.append((col, "Neutral", 0.5))  # 50% weighting for neutral correlation
