@@ -42,14 +42,14 @@ def plot_correlations(df, cols):
         
         # Investment Recommendation
         investment_recommendation = []
-        weights = st.slider("Importance of correlation in investment decision", 0.0, 1.0, 0.5)
         for col in cols:
             if corr[col].mean() > 0.5:
-                investment_recommendation.append((col, "Good investment opportunity", weights))
+                investment_recommendation.append((col, "Good investment opportunity", 0.7))  # 70% weighting for positive correlation
             elif corr[col].mean() < -0.5:
-                investment_recommendation.append((col, "Not a good investment opportunity", 1 - weights))
+                investment_recommendation.append((col, "Not a good investment opportunity", 0.3))  # 30% weighting for negative correlation
             else:
-                investment_recommendation.append((col, "Neutral", 0.5))
+                investment_recommendation.append((col, "Neutral", 0.5))  # 50% weighting for neutral correlation
+        
         st.write("Investment Recommendation:")
         st.write(investment_recommendation)
         
