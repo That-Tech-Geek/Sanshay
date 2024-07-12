@@ -6,7 +6,7 @@ import numpy as np
 
 # Function to load CSV file
 def load_csv():
-    uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
+    uploaded_file = st.file_uploader("Upload your company data file", type=["csv"])
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
         return df
@@ -19,7 +19,7 @@ def get_numeric_columns(df):
 
 # Function to edit numeric columns
 def edit_columns(numeric_cols):
-    edited_cols = st.multiselect("Select numeric columns to include", numeric_cols, default=numeric_cols)
+    edited_cols = st.multiselect("Choose the financial metrics to analyze", numeric_cols, default=numeric_cols)
     return edited_cols
 
 # Function to plot correlation graphs
@@ -32,50 +32,60 @@ def plot_correlations(df, cols):
         
         # Calculate and display correlation coefficients
         corr_coefficients = corr.unstack().sort_values(ascending=False)
-        st.write("Correlation Coefficients:")
+        st.write("How the financial metrics are related:")
         st.write(corr_coefficients)
         
         # Identify highly correlated columns
         highly_correlated_cols = [(i, j) for i in range(len(corr)) for j in range(i) if abs(corr.iloc[i, j]) > 0.8]
-        st.write("Highly Correlated Columns (|r| > 0.8):")
+        st.write("Financial metrics that are strongly linked:")
         st.write(highly_correlated_cols)
         
         # Investment Recommendation
         investment_recommendation = []
+        weights = st.slider("Importance of correlation in investment decision", 0.0, 1.0, 0.5)
         for col in cols:
             if corr[col].mean() > 0.5:
-                investment_recommendation.append((col, "Good to invest in"))
+                investment_recommendation.append((col, "Good investment opportunity", weights))
             elif corr[col].mean() < -0.5:
-                investment_recommendation.append((col, "Not good to invest in"))
+                investment_recommendation.append((col, "Not a good investment opportunity", 1 - weights))
             else:
-                investment_recommendation.append((col, "Neutral"))
+                investment_recommendation.append((col, "Neutral", 0.5))
         st.write("Investment Recommendation:")
         st.write(investment_recommendation)
+        
+        # Final Verdict
+        final_verdict = sum([x[2] for x in investment_recommendation]) / len(investment_recommendation)
+        if final_verdict > 0.5:
+            st.write("Final Verdict: This company is a good investment opportunity")
+        elif final_verdict < 0.5:
+            st.write("Final Verdict: This company is not a good investment opportunity")
+        else:
+            st.write("Final Verdict: Neutral")
     else:
-        st.warning("Select at least two numeric columns to plot correlations.")
+        st.warning("Please select at least two financial metrics to analyze.")
 
 # Main function to run the app
 def main():
-    st.title("Correlation Graphs for Numeric Columns")
+    st.title("Company Investment Analysis")
 
     df = load_csv()
 
     if df is not None:
-        st.write("DataFrame loaded successfully!")
+        st.write("Company data loaded successfully!")
         numeric_cols = get_numeric_columns(df)
 
         if numeric_cols:
-            st.write("Numeric columns detected:")
+            st.write("Financial metrics detected:")
             st.write(numeric_cols)
 
             edited_cols = edit_columns(numeric_cols)
 
-            if st.button("Generate Correlation Graphs"):
+            if st.button("Analyze Company Data"):
                 plot_correlations(df, edited_cols)
         else:
-            st.warning("No numeric columns found in the uploaded CSV file.")
+            st.warning("No financial metrics found in the uploaded file.")
     else:
-        st.info("Please upload a CSV file to get started.")
+        st.info("Please upload a company data file to get started.")
 
 if __name__ == "__main__":
     main()
