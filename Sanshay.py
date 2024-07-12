@@ -30,15 +30,6 @@ def clean_data(df, numeric_cols):
         df[col].fillna(df[col].mean(), inplace=True)  # Replace with mean
     st.write("Missing values replaced with mean.")
 
-    # Handle outliers
-    st.write("Handling outliers...")
-    for col in numeric_cols:
-        Q1 = df[col].quantile(0.25)
-        Q3 = df[col].quantile(0.75)
-        IQR = Q3 - Q1
-        df = df[~((df[col] < (Q1 - 1.5 * IQR)) | (df[col] > (Q3 + 1.5 * IQR)))]
-    st.write("Outliers removed.")
-
     # Handle duplicates
     st.write("Handling duplicates...")
     df.drop_duplicates(inplace=True)
