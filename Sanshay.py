@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Function to load CSV file
 def load_csv():
@@ -28,6 +29,16 @@ def plot_correlations(df, cols):
         fig, ax = plt.subplots(figsize=(10, 8))
         sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
         st.pyplot(fig)
+        
+        # Calculate and display correlation coefficients
+        corr_coefficients = corr.unstack().sort_values(ascending=False)
+        st.write("Correlation Coefficients:")
+        st.write(corr_coefficients)
+        
+        # Identify highly correlated columns
+        highly_correlated_cols = [(i, j) for i in range(len(corr)) for j in range(i) if abs(corr.iloc[i, j]) > 0.8]
+        st.write("Highly Correlated Columns (|r| > 0.8):")
+        st.write(highly_correlated_cols)
     else:
         st.warning("Select at least two numeric columns to plot correlations.")
 
