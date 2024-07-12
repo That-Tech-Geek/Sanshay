@@ -39,6 +39,18 @@ def plot_correlations(df, cols):
         highly_correlated_cols = [(i, j) for i in range(len(corr)) for j in range(i) if abs(corr.iloc[i, j]) > 0.8]
         st.write("Highly Correlated Columns (|r| > 0.8):")
         st.write(highly_correlated_cols)
+        
+        # Investment Recommendation
+        investment_recommendation = []
+        for col in cols:
+            if corr[col].mean() > 0.5:
+                investment_recommendation.append((col, "Good to invest in"))
+            elif corr[col].mean() < -0.5:
+                investment_recommendation.append((col, "Not good to invest in"))
+            else:
+                investment_recommendation.append((col, "Neutral"))
+        st.write("Investment Recommendation:")
+        st.write(investment_recommendation)
     else:
         st.warning("Select at least two numeric columns to plot correlations.")
 
