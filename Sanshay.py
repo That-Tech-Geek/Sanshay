@@ -25,10 +25,13 @@ def edit_columns(numeric_cols):
 # Function to plot correlation graphs
 def plot_correlations(df, cols):
     if len(cols) > 1:
-        corr = df[cols].corr()
-        fig, ax = plt.subplots(figsize=(10, 8))
-        sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
-        st.pyplot(fig)
+        corr = df[edited_cols].corr()
+        print("Correlation Matrix:")
+        print(corr)
+
+fig, ax = plt.subplots(figsize=(10, 8))
+sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
+st.pyplot(fig)
         
         # Calculate and display correlation coefficients
         corr_coefficients = corr.unstack().sort_values(ascending=False)
