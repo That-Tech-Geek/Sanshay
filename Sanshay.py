@@ -23,15 +23,16 @@ def edit_columns(numeric_cols):
     return edited_cols
 
 # Function to clean data
-def clean_data(df):
+def clean_data(df, numeric_cols):
     # Handle missing values
     st.write("Handling missing values...")
-    df.fillna(df.mean(), inplace=True)  # Replace with mean
+    for col in numeric_cols:
+        df[col].fillna(df[col].mean(), inplace=True)  # Replace with mean
     st.write("Missing values replaced with mean.")
 
     # Handle outliers
     st.write("Handling outliers...")
-    for col in df.select_dtypes(include=['number']).columns:
+    for col in numeric_cols:
         Q1 = df[col].quantile(0.25)
         Q3 = df[col].quantile(0.75)
         IQR = Q3 - Q1
@@ -72,7 +73,7 @@ def main():
             edited_cols = edit_columns(numeric_cols)
 
             if st.button("Clean and Generate Correlation Graphs"):
-                df = clean_data(df)
+                df = clean_data(df, edited_cols)
                 plot_correlations(df, edited_cols)
         else:
             st.warning("No numeric columns found in the uploaded CSV file.")
