@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import numpy as np
 
 # Function to load CSV file
 def load_csv():
@@ -21,21 +20,6 @@ def get_numeric_columns(df):
 def edit_columns(numeric_cols):
     edited_cols = st.multiselect("Select numeric columns to include", numeric_cols, default=numeric_cols)
     return edited_cols
-
-# Function to clean data
-def clean_data(df, numeric_cols):
-    # Handle missing values
-    st.write("Handling missing values...")
-    for col in numeric_cols:
-        df[col].fillna(df[col].mean(), inplace=True)  # Replace with mean
-    st.write("Missing values replaced with mean.")
-
-    # Handle duplicates
-    st.write("Handling duplicates...")
-    df.drop_duplicates(inplace=True)
-    st.write("Duplicates removed.")
-
-    return df
 
 # Function to plot correlation graphs
 def plot_correlations(df, cols):
@@ -63,8 +47,7 @@ def main():
 
             edited_cols = edit_columns(numeric_cols)
 
-            if st.button("Clean and Generate Correlation Graphs"):
-                df = clean_data(df, edited_cols)
+            if st.button("Generate Correlation Graphs"):
                 plot_correlations(df, edited_cols)
         else:
             st.warning("No numeric columns found in the uploaded CSV file.")
