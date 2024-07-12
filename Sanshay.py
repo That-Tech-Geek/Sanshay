@@ -63,7 +63,7 @@ def plot_correlations(df, cols):
             else:
                 st.write("Final Verdict: Neutral")
         else:
-            st.warning("Select at least two numeric columns to plot correlations.")
+            st.warning("Select at least two numeric columns toplot correlations.")
     except KeyError as e:
         st.error(f"Error: Column '{e.args[0]}' does not exist in the DataFrame.")
 
