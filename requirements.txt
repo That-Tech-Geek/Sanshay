@@ -3,4 +3,3 @@ pandas
 seaborn
 matplotlib
 scipy
-st_aggrid
