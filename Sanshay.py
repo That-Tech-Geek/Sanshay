@@ -46,7 +46,7 @@ def plot_correlations(df, cols):
 
 # Main function to run the app
 def main():
-    st.title("Correlation Graphs for Numeric Columns")
+    st.title("Hey, I'm Sanshay, and I'm here to help you make Data analysis easier!")
 
     df = load_csv()
 
