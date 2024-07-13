@@ -31,8 +31,8 @@ def pearson_correlation_test(df, cols):
             col1 = cols[i]
             col2 = cols[j]
             corr_coef, p_value = pearsonr(df[col1], df[col2])
-            correlation_coefficients[(col1, col2)] = corr_coef
-            p_values[(col1, col2)] = p_value
+            correlation_coefficients[f"{col1}_{col2}"] = corr_coef
+            p_values[f"{col1}_{col2}"] = p_value
     return correlation_coefficients, p_values
 
 # Function to plot correlation graphs
@@ -58,9 +58,13 @@ def plot_correlations(df, cols):
             correlation_coefficients, p_values = pearson_correlation_test(df, cols)
             st.write("Pearson correlation coefficients and p-values:")
             st.write("Correlation Coefficients:")
-            st.write(correlation_coefficients)
+            for key, value in correlation_coefficients.items():
+                col1, col2 = key.split("_")
+                st.write(f"{col1} and {col2}: {value}")
             st.write("p-values:")
-            st.write(p_values)
+            for key, value in p_values.items():
+                col1, col2 = key.split("_")
+                st.write(f"{col1} and {col2}: {value}")
     except Exception as e:
         st.error(f"An error occurred: {e}")
     finally:
