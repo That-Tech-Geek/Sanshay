@@ -3,7 +3,6 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
-from st_aggrid import AgGrid, GridOptionsBuilder
 
 # Function to load CSV file
 def load_csv():
@@ -57,22 +56,19 @@ def plot_correlations(df, cols):
             
             # Perform Pearson correlation test
             correlation_coefficients, p_values = pearson_correlation_test(df, cols)
-            data = []
+            st.write("Pearson correlation coefficients and p-values:")
+            st.write("Correlation Coefficients:")
             for key, value in correlation_coefficients.items():
                 col1, col2 = key.split("_")
                 idx1 = cols.index(col1)
                 idx2 = cols.index(col2)
-                data.append({
-                    "Column 1": f"Column {idx1+1} ({col1})",
-                    "Column 2": f"Column {idx2+1} ({col2})",
-                    "Pearson Correlation Coefficient": value,
-                    "p-value": p_values[key]
-                })
-            df = pd.DataFrame(data)
-            gb = GridOptionsBuilder.from_dataframe(df)
-            gb.configure_pagination(paginationAutoPageSize=True) #Add pagination
-            gb.configure_default_column(groupable=True, value=True, enableRowGroup=True, aggFunc="sum", editable=True)
-            AgGrid(df, gridOptions=gb.build(), height=500, width="100%")
+                st.write(f"Column {idx1+1} ({col1}) and Column {idx2+1} ({col2}): {value}")
+            st.write("p-values:")
+            for key, value in p_values.items():
+                col1, col2 = key.split("_")
+                idx1 = cols.index(col1)
+                idx2 = cols.index(col2)
+                st.write(f"Column {idx1+1} ({col1}) and Column {idx2+1} ({col2}): {value}")
     except Exception as e:
         st.error(f"An error occurred: {e}")
     finally:
