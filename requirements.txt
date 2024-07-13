@@ -1,5 +1,6 @@
-streamlit
+st_aggrid streamlit
 pandas
 seaborn
 matplotlib
 scipy
+st_aggrid
