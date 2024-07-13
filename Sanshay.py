@@ -39,6 +39,10 @@ def plot_correlations(df, cols):
             highly_correlated_cols = [(cols[i], cols[j]) for i in range(len(corr)) for j in range(i) if abs(corr.iloc[i, j]) > 0.8 and i!= j]
             st.write("Financial metrics that are strongly linked:")
             st.write(highly_correlated_cols)
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+    finally:
+        plt.close('all')  # Close all matplotlib figures to avoid memory leak
 
 # Main function to run the app
 def main():
@@ -62,6 +66,5 @@ def main():
             st.warning("No numeric columns found in the uploaded CSV file.")
     else:
         st.info("Please upload a CSV file to get started.")
-
 if __name__ == "__main__":
     main()
