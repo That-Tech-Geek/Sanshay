@@ -60,11 +60,15 @@ def plot_correlations(df, cols):
             st.write("Correlation Coefficients:")
             for key, value in correlation_coefficients.items():
                 col1, col2 = key.split("_")
-                st.write(f"{col1} and {col2}: {value}")
+                idx1 = cols.index(col1)
+                idx2 = cols.index(col2)
+                st.write(f"Column {idx1+1} ({col1}) and Column {idx2+1} ({col2}): {value}")
             st.write("p-values:")
             for key, value in p_values.items():
                 col1, col2 = key.split("_")
-                st.write(f"{col1} and {col2}: {value}")
+                idx1 = cols.index(col1)
+                idx2 = cols.index(col2)
+                st.write(f"Column {idx1+1} ({col1}) and Column {idx2+1} ({col2}): {value}")
     except Exception as e:
         st.error(f"An error occurred: {e}")
     finally:
