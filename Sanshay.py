@@ -7,6 +7,7 @@ import plotly.express as px
 
 # Function to load CSV file
 def load_csv():
+    st.set_option("server.maxMessageSize", 1024 * 1024 * 1024)  # 1GB
     uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
@@ -109,5 +110,6 @@ def main():
             st.warning("No numeric columns found in the uploaded CSV file.")
     else:
         st.info("Please upload a CSV file to get started.")
+
 if __name__ == "__main__":
     main()
