@@ -3,6 +3,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
+import plotly.express as px
 
 # Function to load CSV file
 def load_csv():
@@ -56,23 +57,31 @@ def plot_correlations(df, cols):
             
             # Perform Pearson correlation test
             correlation_coefficients, p_values = pearson_correlation_test(df, cols)
-            st.write("Pearson correlation coefficients and p-values:")
-            st.write("Correlation Coefficients:")
+            data = []
             for key, value in correlation_coefficients.items():
                 col1, col2 = key.split("_")
                 idx1 = cols.index(col1)
                 idx2 = cols.index(col2)
-                st.write(f"Column {idx1+1} ({col1}) and Column {idx2+1} ({col2}): {value}")
-            st.write("p-values:")
-            for key, value in p_values.items():
-                col1, col2 = key.split("_")
-                idx1 = cols.index(col1)
-                idx2 = cols.index(col2)
-                st.write(f"Column {idx1+1} ({col1}) and Column {idx2+1} ({col2}): {value}")
+                data.append({
+                    "Column 1": f"Column {idx1+1} ({col1})",
+                    "Column 2": f"Column {idx2+1} ({col2})",
+                    "Pearson Correlation Coefficient": value,
+                    "p-value": p_values[key]
+                })
+            df = pd.DataFrame(data)
+            st.write(df)
     except Exception as e:
         st.error(f"An error occurred: {e}")
     finally:
         plt.close('all')  # Close all matplotlib figures to avoid memory leak
+
+# Function to plot time series graphs
+def plot_time_series(df, cols):
+    try:
+        fig = px.line(df, x=df.index, y=cols)
+        st.plotly_chart(fig, use_container_width=True)
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
 
 # Main function to run the app
 def main():
@@ -92,6 +101,10 @@ def main():
 
             if st.button("Generate Correlation Graphs"):
                 plot_correlations(df, edited_cols)
+
+            time_series_cols = st.multiselect("Select columns to plot time series graphs", numeric_cols, default=numeric_cols)
+            if st.button("Generate Time Series Graphs"):
+                plot_time_series(df, time_series_cols)
         else:
             st.warning("No numeric columns found in the uploaded CSV file.")
     else:
