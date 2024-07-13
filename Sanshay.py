@@ -5,9 +5,10 @@ import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 import plotly.express as px
 
+st.set_option("server.maxMessageSize", 1024 * 1024 * 1024)  # 1GB
+
 # Function to load CSV file
 def load_csv():
-    st.set_option("server.maxMessageSize", 1024 * 1024 * 1024)  # 1GB
     uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
