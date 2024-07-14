@@ -91,6 +91,16 @@ def main():
 
     if df is not None:
         st.write("DataFrame loaded successfully!")
+
+        # Remove rows with empty cells
+        df.dropna(inplace=True)
+
+        # Remove whitespaces from column names
+        df.columns = [col.strip() for col in df.columns]
+
+        # Remove duplicates
+        df.drop_duplicates(inplace=True)
+
         numeric_cols = get_numeric_columns(df)
 
         if numeric_cols:
