@@ -83,6 +83,37 @@ def plot_time_series(df, cols):
     except Exception as e:
         st.error(f"An error occurred: {e}")
 
+# Function to analyze slicer data
+def analyze_slicer_data(df):
+    try:
+        slicer_cols = st.multiselect("Select columns to analyze slicer data", df.columns, default=df.columns)
+        slicer_values = {}
+        for col in slicer_cols:
+            unique_values = df[col].unique()
+            slicer_values[col] = st.multiselect(f"Select values for {col}", unique_values, default=unique_values)
+        
+        filtered_df = df
+        for col, values in slicer_values.items():
+            filtered_df = filtered_df[filtered_df[col].isin(values)]
+        
+        st.write("Filtered DataFrame:")
+        st.write(filtered_df)
+        
+        st.write("Summary statistics:")
+        st.write(filtered_df.describe())
+        
+        # Add option to add a column as a slicer ref
+        slicer_ref_col = st.selectbox("Select a column as a slicer reference", df.columns)
+        st.write(f"Slicer reference column: {slicer_ref_col}")
+        
+        # Create a slicer ref column
+        df[f"Slicer Ref - {slicer_ref_col}"] = df[slicer_ref_col]
+        
+        st.write("Updated DataFrame with slicer ref column:")
+        st.write(df)
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+
 # Main function to run the app
 def main():
     st.title("Hey, I'm Sanshay, and I'm here to help you make Data analysis easier!")
@@ -102,23 +133,16 @@ def main():
         df.drop_duplicates(inplace=True)
 
         numeric_cols = get_numeric_columns(df)
+        edited_cols = edit_columns(numeric_cols)
 
-        if numeric_cols:
-            st.write("Numeric columns detected:")
-            st.write(numeric_cols)
+        if len(edited_cols) > 0:
+            st.write("Selected numeric columns:")
+            st.write(edited_cols)
 
-            edited_cols = edit_columns(numeric_cols)
+            plot_correlations(df, edited_cols)
+            plot_time_series(df, edited_cols)
 
-            if st.button("Generate Correlation Graphs"):
-                plot_correlations(df, edited_cols)
-
-            time_series_cols = st.multiselect("Select columns to plot time series graphs", numeric_cols, default=numeric_cols)
-            if st.button("Generate Time Series Graphs"):
-                plot_time_series(df, time_series_cols)
-        else:
-            st.warning("No numeric columns found in the uploaded CSV file.")
-    else:
-        st.info("Please upload a CSV file to get started.")
+            analyze_slicer_data(df)
 
 if __name__ == "__main__":
     main()
