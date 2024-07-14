@@ -140,6 +140,15 @@ def analyze_slicer_data(df):
         st.write("Updated DataFrame after deleting duplicates, rows with empty cells, and outliers:")
         st.write(filtered_df)
         
+        # Generate inferences using Gemini
+        from gemini import Gemini
+        gemini = Gemini(filtered_df)
+        inferences = gemini.infer()
+        
+        st.write("Inferences:")
+        for inference in inferences:
+            st.write(f"* {inference}")
+        
         # Create a CSV file
         @st.cache
         def convert_df(df):
@@ -155,11 +164,11 @@ def analyze_slicer_data(df):
         )
     except Exception as e:
         st.error(f"An error occurred: {e}")
-        
+    
 # Main function to run the app
 def main():
     st.title("Hey, I'm Sanshay, and I'm here to help you make Data analysis easier!")
-
+    st.write("Sanshay is here to help you understand your dataset inside out, and to draw as many conclusions as you want from it.")
     df = load_csv()
 
     if df is not None:
