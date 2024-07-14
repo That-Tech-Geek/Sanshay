@@ -4,7 +4,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 import plotly.express as px
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
+from transformers import AutoModelForSequenceClassification
+from transformers import AutoTokenizer
 
 # Load chatbot model and tokenizer
 model_name = "distilbert-base-uncased-finetuned-sst-2-english"
