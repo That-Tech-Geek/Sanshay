@@ -86,15 +86,11 @@ def plot_time_series(df, cols):
 # Function to analyze slicer data
 def analyze_slicer_data(df):
     try:
-        slicer_cols = st.multiselect("Select columns to analyze slicer data", df.columns, default=df.columns)
-        slicer_values = {}
-        for col in slicer_cols:
-            unique_values = df[col].unique()
-            slicer_values[col] = st.multiselect(f"Select values for {col}", unique_values, default=unique_values)
+        slicer_col = st.selectbox("Select a column to analyze slicer data", df.columns)
+        unique_values = df[slicer_col].unique()
+        slicer_value = st.selectbox(f"Select a value for {slicer_col}", unique_values)
         
-        filtered_df = df.copy()  # Create a copy of the original DataFrame
-        for col, values in slicer_values.items():
-            filtered_df = filtered_df[(filtered_df[col].isin(values))]
+        filtered_df = df[df[slicer_col] == slicer_value]
         
         st.write("Filtered DataFrame:")
         st.write(filtered_df)
