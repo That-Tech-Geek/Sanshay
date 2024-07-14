@@ -4,13 +4,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 import plotly.express as px
-from transformers import AutoModelForSequenceClassification
-from transformers import AutoTokenizer
-
-# Load chatbot model and tokenizer
-model_name = "distilbert-base-uncased-finetuned-sst-2-english"
-model = AutoModelForSequenceClassification.from_pretrained(model_name)
-tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 # Function to load CSV file
 def load_csv():
@@ -170,28 +163,3 @@ if df is not None:
         ax.set_xlabel(col)
         ax.set_ylabel("Frequency")
         st.pyplot(fig)
-
-# Add chatbot functionality
-st.header("Chatbot")
-user_input = st.text_input("Type a problem or question related to the data:")
-if user_input:
-    # Tokenize user input
-    inputs = tokenizer(user_input, return_tensors="pt")
-    # Get chatbot response
-    outputs = model(**inputs)
-    response = tokenizer.decode(outputs.logits[:, 0, :], skip_special_tokens=True)
-    st.write("Chatbot response:")
-    st.write(response)
-
-    # Suggest solutions based on data inferences
-    if "increase sales" in user_input.lower():
-        st.write("Based on the correlation analysis, it seems that increasing advertising spend is positively correlated with sales. Have you considered increasing your advertising budget?")
-        st.write("Additionally, it seems that there is a strong correlation between customer satisfaction and sales. Have you considered implementing a customer satisfaction survey to identify areas for improvement?")
-    elif "reduce costs" in user_input.lower():
-        st.write("Based on the scatter plots, it seems that there are some outliers in the data that may be contributing to high costs. Have you considered identifying and addressing these outliers?")
-        st.write("Additionally, it seems that there is a strong correlation between employee productivity and costs. Have you considered implementing productivity training programs to reduce costs?")
-    elif "improve customer satisfaction" in user_input.lower():
-        st.write("Based on the time series graphs, it seems that there are some trends in customer satisfaction that may be related to seasonal fluctuations. Have you considered implementing seasonal promotions or discounts to improve customer satisfaction?")
-        st.write("Additionally, it seems that there is a strong correlation between employee training and customer satisfaction. Have you considered implementing employee training programs to improve customer satisfaction?")
-    else:
-        st.write("I'm not sure I understand your question. Can you please rephrase or provide more context?")
