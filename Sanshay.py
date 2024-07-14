@@ -92,7 +92,7 @@ def analyze_slicer_data(df):
             unique_values = df[col].unique()
             slicer_values[col] = st.multiselect(f"Select values for {col}", unique_values, default=unique_values)
         
-        filtered_df = df
+        filtered_df = df.copy()  # Create a copy of the original DataFrame
         for col, values in slicer_values.items():
             filtered_df = filtered_df[filtered_df[col].isin(values)]
         
