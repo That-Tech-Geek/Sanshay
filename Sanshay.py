@@ -113,87 +113,53 @@ def analyze_slicer_data(df):
         empty_rows = filtered_df[filtered_df.isnull().any(axis=1)]
         st.write("Rows with empty cells:")
         st.write(empty_rows)
-        
-        # Select rows with empty cells to delete
-        delete_empty_rows = st.multiselect("Select rows with empty cells to delete", empty_rows.index)
-        
-        # Delete selected rows with empty cells
-        filtered_df.drop(delete_empty_rows, inplace=True)
-        
-        # Identify outliers using the Z-score method
-        from scipy import stats
-        outliers = []
-        for col in filtered_df.select_dtypes(include=['number']).columns:
-            z_scores = np.abs(stats.zscore(filtered_df[col]))
-            outliers.extend(filtered_df[(z_scores > 3)].index)
-        outliers = list(set(outliers))
-        
-        st.write("Outlier rows:")
-        st.write(filtered_df.loc[outliers])
-        
-        # Select outliers to delete
-        delete_outliers = st.multiselect("Select outliers to delete", outliers)
-        
-        # Delete selected outliers
-        filtered_df.drop(delete_outliers, inplace=True)
-        
-        st.write("Updated DataFrame after deleting duplicates, rows with empty cells, and outliers:")
-        st.write(filtered_df)
-        
-        # Generate inferences using Gemini
-        from gemini import Gemini
-        gemini = Gemini(filtered_df)
-        inferences = gemini.infer()
-        
-        st.write("Inferences:")
-        for inference in inferences:
-            st.write(f"* {inference}")
-        
-        # Create a CSV file
-        @st.cache
-        def convert_df(df):
-            return df.to_csv(index=False).encode('utf-8')
-        
-        csv = convert_df(filtered_df)
-        
-        st.download_button(
-            label="Download CSV",
-            data=csv,
-            file_name='filtered_data.csv',
-            mime='text/csv'
-        )
     except Exception as e:
         st.error(f"An error occurred: {e}")
+
+# Main app
+st.title("Data Analysis App")
+
+# Load CSV file
+df = load_csv()
+if df is not None:
+    # Get numeric columns
+    numeric_cols = get_numeric_columns(df)
     
-# Main function to run the app
-def main():
-    st.title("Hey, I'm Sanshay, and I'm here to help you make Data analysis easier!")
-    st.write("Sanshay is here to help you understand your dataset inside out, and to draw as many conclusions as you want from it.")
-    df = load_csv()
-
-    if df is not None:
-        st.write("DataFrame loaded successfully!")
-
-        # Remove rows with empty cells
-        df.dropna(inplace=True)
-
-        # Remove whitespaces from column names
-        df.columns = [col.strip() for col in df.columns]
-
-        # Remove duplicates
-        df.drop_duplicates(inplace=True)
-
-        numeric_cols = get_numeric_columns(df)
-        edited_cols = edit_columns(numeric_cols)
-
-        if len(edited_cols) > 0:
-            st.write("Selected numeric columns:")
-            st.write(edited_cols)
-
-            plot_correlations(df, edited_cols)
-            plot_time_series(df, edited_cols)
-
-            analyze_slicer_data(df)
-
-if __name__ == "__main__":
-    main()
+    # Edit numeric columns
+    edited_cols = edit_columns(numeric_cols)
+    
+    # Plot correlation graphs
+    plot_correlations(df, edited_cols)
+    
+    # Plot time series graphs
+    plot_time_series(df, edited_cols)
+    
+    # Analyze slicer data
+    analyze_slicer_data(df)
+    
+    # Generate summary statistics
+    st.write("Summary statistics:")
+    st.write(df.describe())
+    
+    # Generate correlation matrix
+    corr = df.corr()
+    st.write("Correlation matrix:")
+    st.write(corr)
+    
+    # Generate scatter plots
+    for col1 in edited_cols:
+        for col2 in edited_cols:
+            if col1!= col2:
+                fig, ax = plt.subplots()
+                ax.scatter(df[col1], df[col2])
+                ax.set_xlabel(col1)
+                ax.set_ylabel(col2)
+                st.pyplot(fig)
+    
+    # Generate histograms
+    for col in edited_cols:
+        fig, ax = plt.subplots()
+        ax.hist(df[col], bins=50)
+        ax.set_xlabel(col)
+        ax.set_ylabel("Frequency")
+        st.pyplot(fig)
