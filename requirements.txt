@@ -4,4 +4,4 @@ seaborn
 matplotlib
 scipy
 plotly
-gemini
+rasa
