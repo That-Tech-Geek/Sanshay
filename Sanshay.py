@@ -113,7 +113,7 @@ def analyze_slicer_data(df):
         st.write(df)
     except Exception as e:
         st.error(f"An error occurred: {e}")
-
+        
 # Main function to run the app
 def main():
     st.title("Hey, I'm Sanshay, and I'm here to help you make Data analysis easier!")
