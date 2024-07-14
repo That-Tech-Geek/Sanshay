@@ -98,15 +98,61 @@ def analyze_slicer_data(df):
         st.write("Summary statistics:")
         st.write(filtered_df.describe())
         
-        # Add option to add a column as a slicer ref
-        slicer_ref_col = st.selectbox("Select a column as a slicer reference", df.columns)
-        st.write(f"Slicer reference column: {slicer_ref_col}")
+        # Identify duplicates
+        duplicate_rows = filtered_df[filtered_df.duplicated()]
+        st.write("Duplicate rows:")
+        st.write(duplicate_rows)
         
-        # Create a slicer ref column
-        df[f"Slicer Ref - {slicer_ref_col}"] = df[slicer_ref_col]
+        # Select duplicates to delete
+        delete_duplicates = st.multiselect("Select duplicates to delete", duplicate_rows.index)
         
-        st.write("Updated DataFrame with slicer ref column:")
-        st.write(df)
+        # Delete selected duplicates
+        filtered_df.drop(delete_duplicates, inplace=True)
+        
+        # Identify rows with empty cells
+        empty_rows = filtered_df[filtered_df.isnull().any(axis=1)]
+        st.write("Rows with empty cells:")
+        st.write(empty_rows)
+        
+        # Select rows with empty cells to delete
+        delete_empty_rows = st.multiselect("Select rows with empty cells to delete", empty_rows.index)
+        
+        # Delete selected rows with empty cells
+        filtered_df.drop(delete_empty_rows, inplace=True)
+        
+        # Identify outliers using the Z-score method
+        from scipy import stats
+        outliers = []
+        for col in filtered_df.select_dtypes(include=['number']).columns:
+            z_scores = np.abs(stats.zscore(filtered_df[col]))
+            outliers.extend(filtered_df[(z_scores > 3)].index)
+        outliers = list(set(outliers))
+        
+        st.write("Outlier rows:")
+        st.write(filtered_df.loc[outliers])
+        
+        # Select outliers to delete
+        delete_outliers = st.multiselect("Select outliers to delete", outliers)
+        
+        # Delete selected outliers
+        filtered_df.drop(delete_outliers, inplace=True)
+        
+        st.write("Updated DataFrame after deleting duplicates, rows with empty cells, and outliers:")
+        st.write(filtered_df)
+        
+        # Create a CSV file
+        @st.cache
+        def convert_df(df):
+            return df.to_csv(index=False).encode('utf-8')
+        
+        csv = convert_df(filtered_df)
+        
+        st.download_button(
+            label="Download CSV",
+            data=csv,
+            file_name='filtered_data.csv',
+            mime='text/csv'
+        )
     except Exception as e:
         st.error(f"An error occurred: {e}")
         
