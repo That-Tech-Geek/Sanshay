@@ -94,7 +94,7 @@ def analyze_slicer_data(df):
         
         filtered_df = df.copy()  # Create a copy of the original DataFrame
         for col, values in slicer_values.items():
-            filtered_df = filtered_df[filtered_df[col].isin(values)]
+            filtered_df = filtered_df[(filtered_df[col].isin(values))]
         
         st.write("Filtered DataFrame:")
         st.write(filtered_df)
