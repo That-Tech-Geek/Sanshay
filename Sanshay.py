@@ -130,7 +130,9 @@ def analyze_slicer_data(df):
         st.write(filtered_df.median())
         
         st.write("Mode:")
-        st.write(filtered_df.mode().iloc[0])
+        modes = filtered_df.mode()
+        for col, mode in modes.iteritems():
+            st.write(f"Column {col}: {mode.values}")
         
         st.write("Standard Deviation:")
         st.write(filtered_df.std())
