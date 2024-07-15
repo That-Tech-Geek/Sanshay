@@ -157,7 +157,7 @@ def analyze_slicer_data(df):
 
 # Main function
 def main():
-    st.title("Data Analysis App")
+    st.title("Hello, I'm Sanshay, here to help you make data analysis easier and faster!")
     df = load_csv()
     if df is not None:
         numeric_cols = get_numeric_columns(df)
