@@ -9,32 +9,51 @@ import plotly.express as px
 def load_csv():
     uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
     if uploaded_file is not None:
-        df = pd.read_csv(uploaded_file)
-        return df
+        try:
+            df = pd.read_csv(uploaded_file)
+            return df
+        except pd.errors.EmptyDataError:
+            st.error("Error: The uploaded file is empty.")
+            return None
+        except pd.errors.ParserError:
+            st.error("Error: The uploaded file is not a valid CSV file.")
+            return None
     return None
 
 # Function to detect numeric columns
 def get_numeric_columns(df):
-    numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
-    return numeric_cols
+    try:
+        numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
+        return numeric_cols
+    except AttributeError:
+        st.error("Error: The data frame is empty.")
+        return []
 
 # Function to edit numeric columns
 def edit_columns(numeric_cols):
-    edited_cols = st.multiselect("Select numeric columns to include", numeric_cols, default=numeric_cols)
-    return edited_cols
+    try:
+        edited_cols = st.multiselect("Select numeric columns to include", numeric_cols, default=numeric_cols)
+        return edited_cols
+    except TypeError:
+        st.error("Error: No numeric columns found in the data frame.")
+        return []
 
 # Function to perform Pearson correlation test
 def pearson_correlation_test(df, cols):
-    correlation_coefficients = {}
-    p_values = {}
-    for i in range(len(cols)):
-        for j in range(i+1, len(cols)):
-            col1 = cols[i]
-            col2 = cols[j]
-            corr_coef, p_value = pearsonr(df[col1], df[col2])
-            correlation_coefficients[f"{col1}_{col2}"] = corr_coef
-            p_values[f"{col1}_{col2}"] = p_value
-    return correlation_coefficients, p_values
+    try:
+        correlation_coefficients = {}
+        p_values = {}
+        for i in range(len(cols)):
+            for j in range(i+1, len(cols)):
+                col1 = cols[i]
+                col2 = cols[j]
+                corr_coef, p_value = pearsonr(df[col1], df[col2])
+                correlation_coefficients[f"{col1}_{col2}"] = corr_coef
+                p_values[f"{col1}_{col2}"] = p_value
+        return correlation_coefficients, p_values
+    except ValueError:
+        st.error("Error: The selected columns are not numeric.")
+        return {}, {}
 
 # Function to plot correlation graphs
 def plot_correlations(df, cols):
@@ -103,63 +122,4 @@ def analyze_slicer_data(df):
         st.write("Duplicate rows:")
         st.write(duplicate_rows)
         
-        # Select duplicates to delete
-        delete_duplicates = st.multiselect("Select duplicates to delete", duplicate_rows.index)
-        
-        # Delete selected duplicates
-        filtered_df.drop(delete_duplicates, inplace=True)
-        
-        # Identify rows with empty cells
-        empty_rows = filtered_df[filtered_df.isnull().any(axis=1)]
-        st.write("Rows with empty cells:")
-        st.write(empty_rows)
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-
-# Main app
-st.title("Data Analysis App")
-
-# Load CSV file
-df = load_csv()
-if df is not None:
-    # Get numeric columns
-    numeric_cols = get_numeric_columns(df)
-    
-    # Edit numeric columns
-    edited_cols = edit_columns(numeric_cols)
-    
-    # Plot correlation graphs
-    plot_correlations(df, edited_cols)
-    
-    # Plot time series graphs
-    plot_time_series(df, edited_cols)
-    
-    # Analyze slicer data
-    analyze_slicer_data(df)
-    
-    # Generate summary statistics
-    st.write("Summary statistics:")
-    st.write(df.describe())
-    
-    # Generate correlation matrix
-    corr = df.corr()
-    st.write("Correlation matrix:")
-    st.write(corr)
-    
-    # Generate scatter plots
-    for col1 in edited_cols:
-        for col2 in edited_cols:
-            if col1!= col2:
-                fig, ax = plt.subplots()
-                ax.scatter(df[col1], df[col2])
-                ax.set_xlabel(col1)
-                ax.set_ylabel(col2)
-                st.pyplot(fig)
-    
-    # Generate histograms
-    for col in edited_cols:
-        fig, ax = plt.subplots()
-        ax.hist(df[col], bins=50)
-        ax.set_xlabel(col)
-        ax.set_ylabel("Frequency")
-        st.pyplot(fig)
+        #
