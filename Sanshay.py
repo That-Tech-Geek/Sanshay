@@ -125,33 +125,33 @@ def analyze_slicer_data(df):
         # Calculate summary statistics
         st.write("Mean:")
         st.write(filtered_df.mean())
-        
+
         st.write("Median:")
         st.write(filtered_df.median())
-        
+
         st.write("Mode:")
         modes = filtered_df.mode()
         for col, mode in modes.iteritems():
             st.write(f"Column {col}: {mode.values}")
-        
+
         st.write("Standard Deviation:")
         st.write(filtered_df.std())
-        
+
         st.write("Variance:")
         st.write(filtered_df.var())
-        
+
         st.write("Minimum values:")
         st.write(filtered_df.min())
-        
+
         st.write("Maximum values:")
         st.write(filtered_df.max())
-        
+
         st.write("Quantiles:")
         st.write(filtered_df.quantile([0.25, 0.5, 0.75]))
-        
+
         st.write("Correlation matrix:")
         st.write(filtered_df.corr())
-        
+
     except Exception as e:
         st.error(f"An error occurred: {e}")
 
