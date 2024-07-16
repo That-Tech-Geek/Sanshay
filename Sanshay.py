@@ -11,7 +11,8 @@ def load_csv():
     if uploaded_file is not None:
         try:
             df = pd.read_csv(uploaded_file)
-            # Identify columns with empty cells and delete them
+            # Identify columns with empty cells, NaN values, and infinite values and delete them
+            df.replace([np.inf, -np.inf], np.nan, inplace=True)
             df.dropna(inplace=True)
             return df
         except pd.errors.EmptyDataError:
