@@ -4,7 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 import plotly.express as px
-
+import numpy as np
 # Function to load CSV file
 def load_csv():
     uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
