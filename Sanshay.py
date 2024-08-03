@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 import plotly.express as px
 import numpy as np
+from io import BytesIO
+
 # Function to load CSV file
 def load_csv():
     uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
@@ -58,6 +60,14 @@ def pearson_correlation_test(df, cols):
         st.error("Error: The selected columns are not numeric.")
         return {}, {}
 
+# Function to generate a CSV download link
+def generate_csv_download(df):
+    csv = df.to_csv(index=False)
+    buf = BytesIO()
+    buf.write(csv.encode())
+    buf.seek(0)
+    return buf
+
 # Function to plot correlation graphs
 def plot_correlations(df, cols):
     try:
@@ -90,8 +100,18 @@ def plot_correlations(df, cols):
                     "Pearson Correlation Coefficient": value,
                     "p-value": p_values[key]
                 })
-            df = pd.DataFrame(data)
-            st.write(df)
+            corr_df = pd.DataFrame(data)
+            
+            # Provide a download button for the correlation table
+            buf = generate_csv_download(corr_df)
+            st.download_button(
+                label="Download Correlation Table",
+                data=buf,
+                file_name="correlation_table.csv",
+                mime="text/csv"
+            )
+            
+            st.write(corr_df)
     except Exception as e:
         st.error(f"An error occurred: {e}")
     finally:
